@@ -1,14 +1,9 @@
 import { Helmet } from 'react-helmet-async';
-// @mui
 import { styled } from '@mui/material/styles';
-import { Link, Container, Typography, Divider, Stack, Button } from '@mui/material';
-// hooks
+import { Link, TextField, Container, Typography, Divider } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
-// components
 import Logo from '../components/logo';
-import Iconify from '../components/iconify';
-// sections
-import { LoginForm } from '../sections/auth/login';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +15,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 const StyledSection = styled('div')(({ theme }) => ({
   width: '100%',
-  maxWidth: 480,
+  maxWidth: 375,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -29,7 +24,7 @@ const StyledSection = styled('div')(({ theme }) => ({
 }));
 
 const StyledContent = styled('div')(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: 380,
   margin: 'auto',
   minHeight: '100vh',
   display: 'flex',
@@ -38,15 +33,13 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
-// ----------------------------------------------------------------------
-
-export default function LoginPage() {
+export default function RegisterPage() {
   const mdUp = useResponsive('up', 'md');
 
   return (
     <>
       <Helmet>
-        <title> Login | Minimal UI </title>
+        <title> Login </title>
       </Helmet>
 
       <StyledRoot>
@@ -60,45 +53,42 @@ export default function LoginPage() {
 
         {mdUp && (
           <StyledSection>
-            <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome Back
+            <Typography variant="h4" sx={{ px: 5 }}>
+              Hi, Welcome Back!
             </Typography>
-            <img src="/assets/illustrations/illustration_login.png" alt="login" />
+            <img src="/assets/illustrations/loginImage.gif" alt="gif" />
           </StyledSection>
         )}
 
         <Container maxWidth="sm">
           <StyledContent>
-            <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
+            <Typography variant="h3" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              Login
             </Typography>
-
-            <Typography variant="body2" sx={{ mb: 5 }}>
-              Don’t have an account? {''}
-              <Link variant="subtitle2">Get started</Link>
+            <Typography variant="h6" sx={{ ml: 'auto' }}>
+              Don't have an Account?
             </Typography>
-
-            <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
-              </Button>
-
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:facebook-fill" color="#1877F2" width={22} height={22} />
-              </Button>
-
-              <Button fullWidth size="large" color="inherit" variant="outlined">
-                <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={22} height={22} />
-              </Button>
-            </Stack>
-
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                OR
-              </Typography>
-            </Divider>
-
-            <LoginForm />
+            <Link sx={{ ml: 'auto' }} href="/register" variant="subtitle2">
+              Get started
+            </Link>
+            <Divider sx={{ my: 3 }} />
+            <form>
+              <TextField
+                style={{ width: "370px", margin: "5px" }}
+                name="username"
+                type="text"
+                label="Username"
+              />
+              <TextField
+                style={{ width: "370px", margin: "5px" }}
+                name="password"
+                type="password"
+                label="Password"
+              />
+            </form>
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+              Login
+            </LoadingButton>
           </StyledContent>
         </Container>
       </StyledRoot>

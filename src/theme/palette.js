@@ -1,102 +1,86 @@
 import { alpha } from '@mui/material/styles';
 
-// ----------------------------------------------------------------------
-
-// SETUP COLORS
-const GREY = {
-  0: '#FFFFFF',
-  100: '#F9FAFB',
-  200: '#F4F6F8',
-  300: '#DFE3E8',
-  400: '#C4CDD5',
-  500: '#919EAB',
-  600: '#637381',
-  700: '#454F5B',
-  800: '#212B36',
-  900: '#161C24',
-};
-
-const PRIMARY = {
-  lighter: '#D1E9FC',
-  light: '#76B0F1',
-  main: '#2065D1',
-  dark: '#103996',
-  darker: '#061B64',
-  contrastText: '#fff',
-};
-
-const SECONDARY = {
-  lighter: '#D6E4FF',
-  light: '#84A9FF',
-  main: '#3366FF',
-  dark: '#1939B7',
-  darker: '#091A7A',
-  contrastText: '#fff',
-};
-
-const INFO = {
-  lighter: '#D0F2FF',
-  light: '#74CAFF',
-  main: '#1890FF',
-  dark: '#0C53B7',
-  darker: '#04297A',
-  contrastText: '#fff',
-};
-
-const SUCCESS = {
-  lighter: '#E9FCD4',
-  light: '#AAF27F',
-  main: '#54D62C',
-  dark: '#229A16',
-  darker: '#08660D',
-  contrastText: GREY[800],
-};
-
-const WARNING = {
-  lighter: '#FFF7CD',
-  light: '#FFE16A',
-  main: '#FFC107',
-  dark: '#B78103',
-  darker: '#7A4F01',
-  contrastText: GREY[800],
-};
-
-const ERROR = {
-  lighter: '#FFE7D9',
-  light: '#FFA48D',
-  main: '#FF4842',
-  dark: '#B72136',
-  darker: '#7A0C2E',
-  contrastText: '#fff',
-};
-
 const palette = {
   common: { black: '#000', white: '#fff' },
-  primary: PRIMARY,
-  secondary: SECONDARY,
-  info: INFO,
-  success: SUCCESS,
-  warning: WARNING,
-  error: ERROR,
-  grey: GREY,
-  divider: alpha(GREY[500], 0.24),
+  primary: {
+    lighter: '#E6F4FF',
+    light: '#B3D4FF',
+    main: '#0d47a1',
+    dark: '#3C5A99',
+    darker: '#293E66',
+    contrastText: '#fff',
+  },
+  secondary: {
+    lighter: '#D6E9FF',
+    light: '#A2C2FF',
+    main: '#9ea9b1',
+    dark: '#002E6C',
+    darker: '#001A36',
+    contrastText: '#fff',
+  },
+  
+  info: {
+    lighter: '#D9EDFF',
+    light: '#B3D4FF',
+    main: '#0096F6',
+    dark: '#0068BF',
+    darker: '#003D84',
+    contrastText: '#fff',
+  },
+  success: {
+    lighter: '#E6FCD7',
+    light: '#B3F7C9',
+    main: '#00C853',
+    dark: '#009624',
+    darker: '#006B1F',
+    contrastText: '#fff',
+  },
+  warning: {
+    lighter: '#FFF8CD',
+    light: '#FFE5A5',
+    main: '#FFC107',
+    dark: '#B78103',
+    darker: '#7A4F01',
+    contrastText: '#fff',
+  },
+  error: {
+    lighter: '#FFD6D9',
+    light: '#FFA2A8',
+    main: '#D32F2F',
+    dark: '#9A0007',
+    darker: '#610001',
+    contrastText: '#fff',
+  },
+  grey: {
+    0: '#FFFFFF',
+    100: '#F7F9FC',
+    200: '#EDF1F7',
+    300: '#E4E9F2',
+    400: '#C5CEE0',
+    500: '#8F9BB3',
+    600: '#2E3A59',
+    700: '#222B45',
+    800: '#1A2138',
+    900: '#151A30',
+  },
+  divider: alpha('#8F9BB3', 0.24),
   text: {
-    primary: GREY[800],
-    secondary: GREY[600],
-    disabled: GREY[500],
+    primary: '#2E3A59',
+    secondary: '#8F9BB3',
+    disabled: '#C5CEE0',
   },
   background: {
-    paper: '#fff',
-    default: GREY[100],
-    neutral: GREY[200],
+    paper: '#e8f4fd',
+    default: '#F7F9FC',
+    neutral: '#F7F9FC',
   },
   action: {
-    active: GREY[600],
-    hover: alpha(GREY[500], 0.08),
-    selected: alpha(GREY[500], 0.16),
-    disabled: alpha(GREY[500], 0.8),
-    disabledBackground: alpha(GREY[500], 0.24),
-    focus: alpha(GREY[500], 0.24),
+    active: '#2E3A59',
+    hover: alpha('#2E3A59', 0.08),
+    selected: alpha('#2E3A59', 0.16),
+    disabled: alpha('#2E3A59', 0.48),
+    disabledBackground: alpha('#2E3A59', 0.24),
+    focus: alpha('#2E3A59', 0.24),
     hoverOpacity: 0.08,
     disabledOpacity: 0.48,
   },
