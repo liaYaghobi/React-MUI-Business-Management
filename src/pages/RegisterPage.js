@@ -4,6 +4,8 @@ import { TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
 import Logo from '../components/logo';
+import { useState } from 'react';
+import axios from 'axios';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -32,6 +34,27 @@ const StyledContent = styled('div')(({ theme }) => ({
 }));
 
 export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    username: "",
+    password: "",
+    isAdmin: false,
+    //passwordConfirm: ""
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/user/register', formData);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      //handle error here
+    }
+  };
+
   const mdUp = useResponsive('up', 'md');
 
   return (
@@ -64,19 +87,33 @@ export default function RegisterPage() {
               Create an Account
             </Typography>
             <Divider sx={{ my: 3 }}/>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex' }}>
                 <TextField
                   style={{ width: "350px", margin: "5px" }}
                   name="firstname"
                   type="text"
                   label="First Name"
+                  value={formData.firstname}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      firstname: e.target.value,
+                    }))
+                  }
                 />
                 <TextField
                   style={{ width: "350px", margin: "5px" }}
                   name="lastname"
                   type="text"
                   label="Last Name"
+                  value={formData.lastname}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      lastname: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <TextField
@@ -84,18 +121,39 @@ export default function RegisterPage() {
                 name="email"
                 type="text"
                 label="Email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    email: e.target.value,
+                  }))
+                }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
                 name="username"
                 type="text"
                 label="Username"
+                value={formData.username}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      username: e.target.value,
+                    }))
+                  }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
                 name="password"
                 type="password"
                 label="Password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    password: e.target.value,
+                  }))
+                }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
@@ -103,10 +161,22 @@ export default function RegisterPage() {
                 type="password"
                 label="Confirm Password"
               />
-            </form>
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+              <input 
+                type="checkbox" 
+                id="isAdmin" 
+                name="isAdmin"
+                checked={formData.isAdmin}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    isAdmin: e.target.checked,
+                  }))
+              }/>
+              <label htmlFor="isAdmin">Admin</label>
+              <LoadingButton fullWidth size="large" type="submit" variant="contained" >
               Submit
-            </LoadingButton>
+              </LoadingButton>
+            </form>
           </StyledContent>
         </Container>
       </StyledRoot>
