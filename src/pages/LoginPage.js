@@ -15,7 +15,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 const StyledSection = styled('div')(({ theme }) => ({
   width: '100%',
-  maxWidth: 375,
+  maxWidth: 385,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',

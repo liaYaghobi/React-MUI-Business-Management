@@ -78,7 +78,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const [open, setOpen] = useState(null);
+  const [userList, setUserList] = useState(USERLIST);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -112,15 +112,7 @@ export default function UserPage() {
     setShowWindow(false);
   }; 
   
-  
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
-
+ 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -139,17 +131,18 @@ export default function UserPage() {
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
+  
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = [name];
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
+      newSelected = selected.slice(1);
     } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      newSelected = selected.slice(0, -1);
     }
+
     setSelected(newSelected);
   };
+  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -169,6 +162,13 @@ export default function UserPage() {
     const newEmployees = [...employees];
     USERLIST.push(...newEmployees);
     setEmployees([{ id: uuidv4(), name: '', branch: '', title: '', salary: '' }]);
+  };
+
+  const handleDeleteClick = (row) => {
+
+    const updatedUserList = USERLIST.splice(row, 1);
+    setUserList(updatedUserList);
+    
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
@@ -214,15 +214,7 @@ export default function UserPage() {
             value={q.name}
             onChange={event => handleChangeInput(q.id, event)}
           />
-          <TextField
-            style={{ width: "200px", margin: "5px" }}
-            name="count"
-            type="number"
-            label="Count"
-            value={q.count}
-            onChange={event => handleChangeInput(q.id, event)}
-          />
-           <TextField
+            <TextField
             style={{ width: "200px", margin: "5px" }}
             name="itemID"
             type="number"
@@ -230,8 +222,17 @@ export default function UserPage() {
             value={q.itemID}
             onChange={event => handleChangeInput(q.id, event)}
           />
+          <TextField
+            style={{ width: "100px", margin: "5px" }}
+            name="count"
+            type="number"
+            label="Count"
+            value={q.count}
+            onChange={event => handleChangeInput(q.id, event)}
+          />
+         
              <TextField
-            style={{ width: "200px", margin: "5px" }}
+            style={{ width: "100px", margin: "5px" }}
             name="cost"
             type="number"
             label="Cost"
@@ -239,7 +240,7 @@ export default function UserPage() {
             onChange={event => handleChangeInput(q.id, event)}
           />
                <TextField
-            style={{ width: "200px", margin: "5px" }}
+            style={{ width: "100px", margin: "5px" }}
             name="price"
             type="number"
             label="Price"
@@ -294,8 +295,8 @@ export default function UserPage() {
 
                   
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
+                          <IconButton size="large" color="inherit"  onClick={() => handleDeleteClick(row)}>
+                            <Iconify icon={'eva:trash-2-outline'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
@@ -347,34 +348,7 @@ export default function UserPage() {
         </Card>
       </Container>
 
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
+    
     </>
   );
 }

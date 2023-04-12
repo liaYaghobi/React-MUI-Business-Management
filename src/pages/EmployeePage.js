@@ -77,6 +77,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
+  const [userList, setUserList] = useState(USERLIST);
   const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -111,15 +112,6 @@ export default function UserPage() {
     setShowWindow(false);
   }; 
   
-  
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -170,6 +162,13 @@ export default function UserPage() {
     setEmployees([{ id: uuidv4(), name: '', branch: '', title: '', salary: '' }]);
   };
 
+  const handleDeleteClick = (row) => {
+
+    const updatedUserList = USERLIST.splice(row, 1);
+    setUserList(updatedUserList);
+    
+  };
+
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -185,7 +184,7 @@ export default function UserPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Employees
           </Typography>
           <Button onClick={handleWindow} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
             Add Employee
@@ -193,8 +192,8 @@ export default function UserPage() {
         </Stack>
         {showWindow && (
         <NewWindow
-          name="example"
-          title="Example Website"
+          name="Add Employees"
+          title="Add Employees"
           features={{ width: 640, height: 480 }}
           onUnload={handleCloseWindow}
         >
@@ -286,8 +285,8 @@ export default function UserPage() {
 
                   
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
+                          <IconButton size="large" color="inherit" onClick={() => handleDeleteClick(row)}>
+                            <Iconify icon={'eva:trash-2-outline'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
@@ -338,35 +337,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }
