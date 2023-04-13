@@ -31,6 +31,10 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
+const handleRegister = () => {
+  window.location.href = '/dashboard';
+};
+
 export default function RegisterPage() {
   const mdUp = useResponsive('up', 'md');
 
@@ -104,7 +108,7 @@ export default function RegisterPage() {
                 label="Confirm Password"
               />
             </form>
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+            <LoadingButton fullWidth size="large" type="submit" variant="contained"   onClick={handleRegister} >
               Submit
             </LoadingButton>
           </StyledContent>

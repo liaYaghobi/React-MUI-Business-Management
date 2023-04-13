@@ -1,9 +1,11 @@
 import { Helmet } from 'react-helmet-async';
 import { styled } from '@mui/material/styles';
-import { Link, TextField, Container, Typography, Divider } from '@mui/material';
+import {Checkbox, FormControlLabel, Link, TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
 import Logo from '../components/logo';
+import { useState} from 'react';
+
 
 // ----------------------------------------------------------------------
 
@@ -33,9 +35,43 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
-export default function RegisterPage() {
+
+export default function LoginPage() {
+
+  const [userChecked, setUserChecked] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
+  const [userType, setUserType] = useState('guest');
+
   const mdUp = useResponsive('up', 'md');
 
+  const handleUserChange = (event) => {
+    setUserChecked(event.target.checked);
+    if (event.target.checked) {
+      setUserType('user');
+      setAdminChecked(false);
+    } else {
+      setUserType('guest');
+    }
+  };
+
+  const handleAdminChange = (event) => {
+    setAdminChecked(event.target.checked);
+    if (event.target.checked) {
+      setUserType('admin');
+      setUserChecked(false);
+    } else {
+      setUserType('guest');
+    }
+  };
+  const handleLogin = () => {
+    if(userType === 'admin'){
+    window.location.href = '/dashboard';
+    }
+    else if(userType ==='user'){
+      window.location.href = '/user/ecommerce';
+    }
+  };
+  
   return (
     <>
       <Helmet>
@@ -86,7 +122,11 @@ export default function RegisterPage() {
                 label="Password"
               />
             </form>
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+            <div style={{ display: 'flex' }}>
+            <FormControlLabel control={<Checkbox/>} label="User" checked={userChecked} onChange={handleUserChange}/>
+            <FormControlLabel control={<Checkbox/>} label="Admin" checked={adminChecked} onChange={handleAdminChange}/>
+            </div>
+            <LoadingButton fullWidth size="large" type="submit" variant="contained"  onClick={handleLogin}>
               Login
             </LoadingButton>
           </StyledContent>

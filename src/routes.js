@@ -11,12 +11,25 @@ import InventoryPage from './pages/InventoryPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import BranchPage from './pages/BranchPage';
 import RegisterPage from './pages/RegisterPage';
+import EcommercePage from './pages/EcommercePage';
 
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
+    {
+      path: '/',
+      element: <LoginPage />
+    },
+    {
+      path: '/user',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to="/user/app" />, index: true },
+        { path: 'ecommerce', element: <EcommercePage /> },
+      ],
+    },
     {
       path: '/dashboard',
       element: <DashboardLayout />,
@@ -26,11 +39,8 @@ export default function Router() {
         { path: 'branches', element: <BranchPage /> },
         { path: 'inventory', element: <InventoryPage /> },
         { path: 'employees', element: <EmployeePage /> },
+
       ],
-    },
-    {
-      path: 'login',
-      element: <LoginPage />,
     },
     {
       path: 'register',
@@ -39,7 +49,6 @@ export default function Router() {
     {
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
@@ -52,3 +61,5 @@ export default function Router() {
 
   return routes;
 }
+
+

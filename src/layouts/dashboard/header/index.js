@@ -15,8 +15,6 @@ import AccountPopover from './AccountPopover';
 
 const NAV_WIDTH = 280;
 
-const HEADER_MOBILE = 64;
-
 const HEADER_DESKTOP = 92;
 
 const StyledRoot = styled(AppBar)(({ theme }) => ({
@@ -28,7 +26,6 @@ const StyledRoot = styled(AppBar)(({ theme }) => ({
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  minHeight: HEADER_MOBILE,
   [theme.breakpoints.up('lg')]: {
     minHeight: HEADER_DESKTOP,
     padding: theme.spacing(0, 5),
