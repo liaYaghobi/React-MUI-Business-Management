@@ -1,6 +1,7 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
+import UserLayout from './layouts/user';
 import SimpleLayout from './layouts/simple';
 //
 
@@ -24,9 +25,9 @@ export default function Router() {
     },
     {
       path: '/user',
-      element: <DashboardLayout />,
+      element: <UserLayout />,
       children: [
-        { element: <Navigate to="/user/app" />, index: true },
+        { element: <Navigate to="/user/app" />},
         { path: 'ecommerce', element: <EcommercePage /> },
       ],
     },
