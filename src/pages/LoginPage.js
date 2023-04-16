@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import {Checkbox, FormControlLabel, Link, TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
-import Logo from '../components/logo';
+
 import { useState} from 'react';
 
 
@@ -79,13 +79,7 @@ export default function LoginPage() {
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'fixed',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
+     
 
         {mdUp && (
           <StyledSection>

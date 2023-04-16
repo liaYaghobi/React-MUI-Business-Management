@@ -11,10 +11,8 @@ import {
   Stack,
   Paper,
   Button,
-  Popover,
   Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
@@ -196,7 +194,7 @@ export default function UserPage() {
         <NewWindow
           name="example"
           title="Example Website"
-          features={{ width: 640, height: 480 }}
+          features={{ width: 850, height: 480 }}
           onUnload={handleCloseWindow}
         >
               <form className='qPortal'>

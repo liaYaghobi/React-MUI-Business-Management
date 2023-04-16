@@ -11,10 +11,8 @@ import {
   Stack,
   Paper,
   Button,
-  Popover,
   Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
@@ -78,7 +76,6 @@ function applySortFilter(array, comparator, query) {
 
 export default function UserPage() {
   const [userList, setUserList] = useState(USERLIST);
-  const [open, setOpen] = useState(null);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -194,7 +191,7 @@ export default function UserPage() {
         <NewWindow
           name="Add Employees"
           title="Add Employees"
-          features={{ width: 640, height: 480 }}
+          features={{ width: 850, height: 480 }}
           onUnload={handleCloseWindow}
         >
               <form className='qPortal'>

@@ -5,23 +5,8 @@ import { useState} from 'react';
 import NewWindow from 'react-new-window';
 
 // @mui
-import {
-  Card,
-  Table,
-  Stack,
-  Paper,
-  Button,
-  Checkbox,
-  TableRow,
-  TableBody,
-  TableCell,
-  Container,
-  Typography,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  TextField,
-} from '@mui/material';
+import { Card, Table, Stack, Paper, Button, Checkbox, TableRow, TableBody, TableCell, Container, Typography,
+  IconButton, TableContainer, TablePagination, TextField,} from '@mui/material';
 
 // components
 import Iconify from '../components/iconify';
@@ -33,7 +18,6 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/app/user';
 // mock
 const USERLIST = [];
 
-// ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -42,8 +26,6 @@ const TABLE_HEAD = [
 ];
 
 // ----------------------------------------------------------------------
-
-
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -99,14 +81,13 @@ export default function UserPage() {
     setEmployees(newEmployees);
   };
 
-
   const handleWindow = () => {
-    // Open the new window
+ 
     setShowWindow(true);
   };
 
   const handleCloseWindow = () => {
-    // Open the new window
+
     setShowWindow(false);
   }; 
   
@@ -117,7 +98,6 @@ export default function UserPage() {
     setUserList(updatedUserList);
     
   };
-
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -149,7 +129,6 @@ export default function UserPage() {
     setSelected(newSelected);
   };
   
- 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -195,7 +174,7 @@ export default function UserPage() {
         <NewWindow
           name="example"
           title="Example Website"
-          features={{ width: 640, height: 480 }}
+          features={{ width: 540, height: 380 }}
           onUnload={handleCloseWindow}
         >
               <form className='qPortal'>

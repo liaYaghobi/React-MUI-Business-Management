@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { FormControlLabel, Checkbox, TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
-import Logo from '../components/logo';
+
 import { useState} from 'react';
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -74,13 +74,7 @@ export default function RegisterPage() {
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'fixed',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
+     
 
         {mdUp && (
           <StyledSection>
