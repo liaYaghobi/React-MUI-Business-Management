@@ -14,7 +14,7 @@ const SvgColor = forwardRef(({ src, sx, ...other }, ref) => (
       width: 24,
       height: 24,
       display: 'inline-block',
-      bgcolor: '#1A2634',
+      bgcolor: '#093170',
       mask: `url(${src}) no-repeat center / contain`,
       WebkitMask: `url(${src}) no-repeat center / contain`,
       ...sx,

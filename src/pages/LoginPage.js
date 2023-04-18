@@ -1,12 +1,12 @@
 import { Helmet } from 'react-helmet-async';
 import { styled } from '@mui/material/styles';
-import {Checkbox, FormControlLabel, Link, TextField, Container, Typography, Divider } from '@mui/material';
+import { Link, TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
 
 import { useState} from 'react';
-
-
+import axios from 'axios';
+import { updateAccountData } from '../_mock/account'
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -38,37 +38,31 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
 
-  const [userChecked, setUserChecked] = useState(false);
-  const [adminChecked, setAdminChecked] = useState(false);
-  const [userType, setUserType] = useState('guest');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const mdUp = useResponsive('up', 'md');
 
-  const handleUserChange = (event) => {
-    setUserChecked(event.target.checked);
-    if (event.target.checked) {
-      setUserType('user');
-      setAdminChecked(false);
-    } else {
-      setUserType('guest');
-    }
-  };
 
-  const handleAdminChange = (event) => {
-    setAdminChecked(event.target.checked);
-    if (event.target.checked) {
-      setUserType('admin');
-      setUserChecked(false);
-    } else {
-      setUserType('guest');
-    }
-  };
-  const handleLogin = () => {
-    if(userType === 'admin'){
-    window.location.href = '/dashboard';
-    }
-    else if(userType ==='user'){
-      window.location.href = '/user/ecommerce';
+  const handleLogin = async () => {
+    try {
+      
+      const response = await axios.post('http://localhost:8000/user/login', { username, password });
+      setIsAdmin(response.data.isAdmin);
+
+      updateAccountData({
+        displayName: response.data.username,
+        email: response.data.email,
+      });
+     
+      if (response.data.isAdmin) {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.href = '/user/ecommerce';
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
   
@@ -103,23 +97,25 @@ export default function LoginPage() {
             </Link>
             <Divider sx={{ my: 3 }} />
             <form>
-              <TextField
-                style={{ width: "370px", margin: "5px" }}
-                name="username"
-                type="text"
-                label="Username"
-              />
-              <TextField
-                style={{ width: "370px", margin: "5px" }}
-                name="password"
-                type="password"
-                label="Password"
-              />
+            <TextField
+              style={{ width: "370px", margin: "5px" }}
+              name="username"
+              type="text"
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <TextField
+              style={{ width: "370px", margin: "5px" }}
+              name="password"
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
             </form>
-            <div style={{ display: 'flex' }}>
-            <FormControlLabel control={<Checkbox/>} label="User" checked={userChecked} onChange={handleUserChange}/>
-            <FormControlLabel control={<Checkbox/>} label="Admin" checked={adminChecked} onChange={handleAdminChange}/>
-            </div>
+          
             <LoadingButton fullWidth size="large" type="submit" variant="contained"  onClick={handleLogin}>
               Login
             </LoadingButton>

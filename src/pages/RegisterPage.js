@@ -1,10 +1,11 @@
 import { Helmet } from 'react-helmet-async';
 import { styled } from '@mui/material/styles';
-import { FormControlLabel, Checkbox, TextField, Container, Typography, Divider } from '@mui/material';
+import { TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
 
-import { useState} from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 
 const StyledRoot = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
@@ -14,7 +15,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 const StyledSection = styled('div')(({ theme }) => ({
   width: '100%',
-  maxWidth: 385,
+  maxWidth: 375,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -33,39 +34,28 @@ const StyledContent = styled('div')(({ theme }) => ({
 }));
 
 export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    username: "",
+    password: "",
+    isAdmin: false,
+    //passwordConfirm: ""
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/user/register', formData);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+      //handle error here
+    }
+  };
+
   const mdUp = useResponsive('up', 'md');
-  const [userChecked, setUserChecked] = useState(false);
-  const [adminChecked, setAdminChecked] = useState(false);
-  const [userType, setUserType] = useState('guest');
-
-
-  const handleUserChange = (event) => {
-    setUserChecked(event.target.checked);
-    if (event.target.checked) {
-      setUserType('user');
-      setAdminChecked(false);
-    } else {
-      setUserType('guest');
-    }
-  };
-
-  const handleAdminChange = (event) => {
-    setAdminChecked(event.target.checked);
-    if (event.target.checked) {
-      setUserType('admin');
-      setUserChecked(false);
-    } else {
-      setUserType('guest');
-    }
-  };
-  const handleRegister = () => {
-    if(userType === 'admin'){
-    window.location.href = '/dashboard';
-    }
-    else if(userType ==='user'){
-      window.location.href = '/user/ecommerce';
-    }
-  };
 
   return (
     <>
@@ -74,8 +64,6 @@ export default function RegisterPage() {
       </Helmet>
 
       <StyledRoot>
-     
-
         {mdUp && (
           <StyledSection>
             <Typography variant="h4" sx={{ px: 5 }}>
@@ -91,19 +79,33 @@ export default function RegisterPage() {
               Create an Account
             </Typography>
             <Divider sx={{ my: 3 }}/>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex' }}>
                 <TextField
                   style={{ width: "350px", margin: "5px" }}
                   name="firstname"
                   type="text"
                   label="First Name"
+                  value={formData.firstname}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      firstname: e.target.value,
+                    }))
+                  }
                 />
                 <TextField
                   style={{ width: "350px", margin: "5px" }}
                   name="lastname"
                   type="text"
                   label="Last Name"
+                  value={formData.lastname}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      lastname: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <TextField
@@ -111,18 +113,39 @@ export default function RegisterPage() {
                 name="email"
                 type="text"
                 label="Email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    email: e.target.value,
+                  }))
+                }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
                 name="username"
                 type="text"
                 label="Username"
+                value={formData.username}
+                  onChange={(e) =>
+                    setFormData((prevFormData) => ({
+                      ...prevFormData,
+                      username: e.target.value,
+                    }))
+                  }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
                 name="password"
                 type="password"
                 label="Password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    password: e.target.value,
+                  }))
+                }
               />
               <TextField
                 style={{ width: "370px", margin: "5px" }}
@@ -130,14 +153,22 @@ export default function RegisterPage() {
                 type="password"
                 label="Confirm Password"
               />
-            </form>
-            <div style={{ display: 'flex' }}>
-            <FormControlLabel control={<Checkbox/>} label="User" checked={userChecked} onChange={handleUserChange}/>
-            <FormControlLabel control={<Checkbox/>} label="Admin" checked={adminChecked} onChange={handleAdminChange}/>
-            </div>
-            <LoadingButton fullWidth size="large" type="submit" variant="contained"   onClick={handleRegister} >
+              <input 
+                type="checkbox" 
+                id="isAdmin" 
+                name="isAdmin"
+                checked={formData.isAdmin}
+                onChange={(e) =>
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    isAdmin: e.target.checked,
+                  }))
+              }/>
+              <label htmlFor="isAdmin">Admin</label>
+              <LoadingButton fullWidth size="large" type="submit" variant="contained" >
               Submit
-            </LoadingButton>
+              </LoadingButton>
+            </form>
           </StyledContent>
         </Container>
       </StyledRoot>

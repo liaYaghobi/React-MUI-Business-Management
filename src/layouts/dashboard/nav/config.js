@@ -26,8 +26,7 @@ const navConfig = [
     path: '/dashboard/employees',
     icon: icon('ic_user'),
   },
- 
- 
+
 ];
 
 export default navConfig;
