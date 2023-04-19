@@ -1,14 +1,18 @@
 import { useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+import { Box, Divider, Typography, MenuItem, Icon, Avatar, IconButton, Popover } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // mocks_
-import account from '../../../_mock/account';
 
 // ----------------------------------------------------------------------
 
 
 export default function AccountPopover() {
+
+  const displayName = sessionStorage.getItem('displayName');
+  const email = sessionStorage.getItem('email');
+
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -16,7 +20,9 @@ export default function AccountPopover() {
   };
 
   const handleClose = () => {
-    setOpen(null);
+    sessionStorage.removeItem('displayName');
+    sessionStorage.removeItem('email');
+    window.location.href = '/';
   };
 
   return (
@@ -38,7 +44,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <AccountCircleIcon  style={{ fontSize: 50 }} />
       </IconButton>
       <Popover
         open={Boolean(open)}
@@ -61,10 +67,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {displayName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.primary' }} noWrap>
-            {account.email}
+            {email}
           </Typography>
         </Box>
 

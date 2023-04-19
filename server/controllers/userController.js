@@ -3,31 +3,32 @@ const async = require("async")
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
-    console.log(req.body.isAdmin)
-    try {
-        
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const user = new User({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            username: req.body.username,
-            password: hashedPassword,
-            isAdmin: req.body.isAdmin
-        })
+  console.log(req.body.isAdmin)
+  try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const user = new User({
+          firstname: req.body.firstname,
+          lastname: req.body.lastname,
+          email: req.body.email,
+          username: req.body.username,
+          password: hashedPassword,
+          isAdmin: req.body.isAdmin
+      })
 
-        console.log(user);
+      console.log(user);
 
-        try {
-            return await user.save()
-        } catch (error) {
-            res.status(500).json({ success: false, error: error.message });
-        }
+      try {
+          const savedUser = await user.save();
+          res.json({ success: true, user: savedUser });
+      } catch (error) {
+          res.status(500).json({ success: false, error: error.message });
+      }
 
-    } catch (error) {
-        res.status(400).json({ success: false, error: error.message });
-    }
+  } catch (error) {
+      res.status(400).json({ success: false, error: error.message });
+  }
 }
+
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;

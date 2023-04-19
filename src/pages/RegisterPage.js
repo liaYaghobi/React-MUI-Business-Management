@@ -44,16 +44,41 @@ export default function RegisterPage() {
     //passwordConfirm: ""
   });
 
+  const [hasError, setHasError] = useState(false);
+  
+  function validateFormData(formData) {
+    for (const key in formData) {
+      if (formData[key] === "") {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/user/register', formData);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-      //handle error here
+    if(validateFormData(formData)) {
+      try {
+        const response = await axios.post('http://localhost:8000/user/register', formData);
+         
+      sessionStorage.setItem('displayName', formData.username);
+      sessionStorage.setItem('email', formData.email);
+
+      if (formData.isAdmin) {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.href = '/user/ecommerce';
+      }
+
+      } catch (error) {
+        console.error(error);
+        //handle error here
+      }
+    } else {
+      setHasError(true);
     }
   };
+  
 
   const mdUp = useResponsive('up', 'md');
 
@@ -72,13 +97,12 @@ export default function RegisterPage() {
             <img src="/assets/illustrations/registerImage.gif" alt="gif" />
           </StyledSection>
         )}
-
         <Container maxWidth="sm">
           <StyledContent>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h4" gutterBottom>
               Create an Account
             </Typography>
-            <Divider sx={{ my: 3 }}/>
+            <Divider sx={{ my: 2 }}/>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex' }}>
                 <TextField
@@ -153,7 +177,7 @@ export default function RegisterPage() {
                 type="password"
                 label="Confirm Password"
               />
-              <input 
+              <input   style={{ marginTop: '13px'}}
                 type="checkbox" 
                 id="isAdmin" 
                 name="isAdmin"
@@ -164,8 +188,11 @@ export default function RegisterPage() {
                     isAdmin: e.target.checked,
                   }))
               }/>
-              <label htmlFor="isAdmin">Admin</label>
-              <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+              <label htmlFor="isAdmin" style={{ fontSize: '16px', marginTop: '13px'}}>Admin</label>
+              <div style={{ color: 'red', fontWeight: 600 }}>
+                {hasError ? <div>Please fill out all the fields!</div> : null}
+            </div>
+              <LoadingButton sx={{ mt: 2, mb: 2 }} fullWidth size="large" type="submit" variant="contained" >
               Submit
               </LoadingButton>
             </form>

@@ -1,30 +1,33 @@
 // component
-import SvgColor from '../../../components/svg-color';
 
+import FeedOutlinedIcon  from '@mui/icons-material/FeedOutlined';
+import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 // ----------------------------------------------------------------------
 
-const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
+//const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
 const navConfig = [
   {
     title: 'Dashboard',
     path: '/dashboard/app',
-    icon: icon('ic_analytics'),
+    icon: <FeedOutlinedIcon />,
   },
   {
     title: 'Branches',
     path: '/dashboard/branches',
-    icon: icon('ic_blog'),
+    icon: <PinDropOutlinedIcon />,
   },
   {
     title: 'Inventory',
     path: '/dashboard/inventory',
-    icon: icon('ic_cart'),
+    icon: <ShoppingCartOutlinedIcon />
   },
   {
     title: 'Employees',
     path: '/dashboard/employees',
-    icon: icon('ic_user'),
+    icon: <GroupOutlinedIcon/>,
   },
 
 ];
