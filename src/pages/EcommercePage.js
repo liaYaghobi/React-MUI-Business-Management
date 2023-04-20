@@ -104,30 +104,51 @@ export default function ProductsPage() {
             <div >
               <h3>{product.name}</h3>
               <p>${product.price}</p>
-              <Button variant="contained" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+              <Button
+                variant="contained"
+                size="medium"
+                style={{
+                  borderRadius: '15px',
+
+                  transition: 'background-color 0.2s ease',
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  padding: '10px 20px',
+                }}
+                onClick={() => handleAddToCart(product)}
+              > Add to Cart
+              </Button>
             </div>
           </Grid>
         ))}
       </Grid>
       {showCart && (
-     <div ref={cartRef} style={{ position: 'absolute', top: '100px', right: '100px', backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', padding: '10px' }}>
-     <h4>Your Cart</h4>
-     {cart.map((item) => (
-      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <p style={{ fontSize: '13px' }}>
-          {item.name} - ${item.price}
-        </p>
-        <MinimizeOutlinedIcon onClick={() => handleDeleteItem(item.id)} fontSize="small" color="primary" />
-      </div>
-    ))}
-    {cart.length > 0 && (
-      <div>
-        <hr />
-        <p style={{ fontWeight: 'bold' }}>Total: ${cart.reduce((total, item) => total + item.price, 0)}</p>
-      </div>
-     )}
-   </div>
-      
+        <div ref={cartRef} style={{ position: 'absolute', top: '100px', right: '100px', backgroundColor: 'white', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', padding: '10px' }}>
+          <h4>Your Cart</h4>
+          {cart.map((item) => (
+            <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <p style={{ fontSize: '13px' }}>
+                {item.name} - ${item.price}
+              </p>
+              <MinimizeOutlinedIcon onClick={() => handleDeleteItem(item.id)} fontSize="small" color="primary" />
+            </div>
+          ))}
+          {cart.length > 0 && (
+            <div>
+              <hr />
+              <p style={{ fontWeight: 'bold' }}>Total: ${cart.reduce((total, item) => total + item.price, 0)}</p>
+              <Button
+                variant="contained"
+                size="small"
+                sx={{ bgcolor: '#424242', color: '#fff', '&:hover': { bgcolor: '#303030' } }}
+              >
+                Checkout
+              </Button>
+            </div>
+          )}
+
+        </div>
+
       )}
     </>
   );

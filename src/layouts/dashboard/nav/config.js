@@ -1,12 +1,9 @@
-// component
 
 import FeedOutlinedIcon  from '@mui/icons-material/FeedOutlined';
 import PinDropOutlinedIcon from '@mui/icons-material/PinDropOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 // ----------------------------------------------------------------------
-
-//const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
 const navConfig = [
   {

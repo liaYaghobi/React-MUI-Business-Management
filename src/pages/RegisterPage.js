@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
+import React, { useEffect } from 'react';
 
 import { useState } from 'react';
 import axios from 'axios';
@@ -45,7 +46,17 @@ export default function RegisterPage() {
   });
 
   const [hasError, setHasError] = useState(false);
+
+  const [emailError, setEmailError] = useState(false);
+
+  const [usernameError, setUsernameError] = useState(false);
   
+  useEffect(() => {
+    setEmailError(false);
+    setUsernameError(false);
+    setHasError(false);
+  }, [formData]);
+
   function validateFormData(formData) {
     for (const key in formData) {
       if (formData[key] === "") {
@@ -57,22 +68,28 @@ export default function RegisterPage() {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(validateFormData(formData)) {
+    if (validateFormData(formData)) {
       try {
         const response = await axios.post('http://localhost:8000/user/register', formData);
-         
-      sessionStorage.setItem('displayName', formData.username);
-      sessionStorage.setItem('email', formData.email);
-
-      if (formData.isAdmin) {
-        window.location.href = '/dashboard';
-      } else {
-        window.location.href = '/user/ecommerce';
-      }
-
+  
+        sessionStorage.setItem('displayName', formData.username);
+        sessionStorage.setItem('email', formData.email);
+  
+        if (formData.isAdmin) {
+          window.location.href = '/dashboard';
+        } else {
+          window.location.href = '/user/ecommerce';
+        }
       } catch (error) {
-        console.error(error);
-        //handle error here
+        const errorMessage = error.response.data.error;
+        if (errorMessage.includes('E11000')) {
+         
+          if (errorMessage.includes('email')) {
+            setEmailError(true);
+          } else if (errorMessage.includes('username')) {
+            setUsernameError(true);
+          }
+        }
       }
     } else {
       setHasError(true);
@@ -103,6 +120,12 @@ export default function RegisterPage() {
               Create an Account
             </Typography>
             <Divider sx={{ my: 2 }}/>
+            <div style={{ color: 'red', fontWeight: 600 }}>
+                {emailError ? <div>Email already in use</div> : null}
+              </div>
+              <div style={{ color: 'red', fontWeight: 600 }}>
+                {usernameError ? <div>Username taken</div> : null}
+              </div>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex' }}>
                 <TextField
@@ -189,9 +212,11 @@ export default function RegisterPage() {
                   }))
               }/>
               <label htmlFor="isAdmin" style={{ fontSize: '16px', marginTop: '13px'}}>Admin</label>
+
               <div style={{ color: 'red', fontWeight: 600 }}>
                 {hasError ? <div>Please fill out all the fields!</div> : null}
-            </div>
+              </div>
+
               <LoadingButton sx={{ mt: 2, mb: 2 }} fullWidth size="large" type="submit" variant="contained" >
               Submit
               </LoadingButton>

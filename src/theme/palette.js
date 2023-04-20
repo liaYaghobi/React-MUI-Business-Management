@@ -70,7 +70,7 @@ const palette = {
     disabled: '#C5CEE0',
   },
   background: {
-    paper: '#e8f4fd',
+    paper: '#E0E3E9',
     default: '#F7F9FC',
     neutral: '#F7F9FC',
   },

@@ -1,9 +1,8 @@
 import { useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, MenuItem, Icon, Avatar, IconButton, Popover } from '@mui/material';
+import { Box, Divider, Typography, MenuItem, IconButton, Popover } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// mocks_
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +19,10 @@ export default function AccountPopover() {
   };
 
   const handleClose = () => {
+    setOpen(null);
+  };
+
+  const handleLogout = () => {
     sessionStorage.removeItem('displayName');
     sessionStorage.removeItem('email');
     window.location.href = '/';
@@ -75,7 +78,7 @@ export default function AccountPopover() {
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>

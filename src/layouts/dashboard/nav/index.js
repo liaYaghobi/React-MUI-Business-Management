@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar, Icon} from '@mui/material';
+import { Box, Link, Drawer, Typography} from '@mui/material';
 // mock
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -39,7 +39,6 @@ Nav.propTypes = {
 export default function Nav({ openNav, onCloseNav }) {
 
   const displayName = sessionStorage.getItem('displayName');
-  const email = sessionStorage.getItem('email');
 
   const { pathname } = useLocation();
 
