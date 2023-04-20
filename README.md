@@ -20,11 +20,12 @@ All the team members are equally contributing to the successful completion of th
 
 
 TO DO:
-1 - Make login page the default page
-2 - Have the site redirect you to either admin or user portal depending on user type
-* - Lia will design  the user portal itself
-4 - Update Routes + Controllers to all have everything (add/getbyname/deletebyname/update-edit)
+* - Collections for Branches, Employees 
+* - Logout button needs to actually log you out and redirect to login page (Lia Probably Did)
+* - Fix + Add Item Window Popup to auto update what it renders
+* - Delete when you select all
+* - selecting only 2 rows? (it only lets you choose all or 1 row at a time)
 
 must do both:
 npm start
-node server.js
+node server.js  (make sure in server folder directory)

@@ -1,13 +1,13 @@
-const Inventory = require("../models/inventory.model")
+const Employee = require("../models/employee.model")
 const async = require("async")
 
 exports.getAll = (req, res, next) => {
-    Inventory.find({}, (err, items) => {
+    Employee.find({}, (err, employees) => {
         if (err) {
           return next(err);
         }
-        // Successful, so send response with the items array
-        res.send(items);
+        // Successful, so send response with the employees array
+        res.send(employees);
       });        
   }  
 
@@ -15,7 +15,7 @@ exports.detail = (req, res, next) => {
     async.parallel(
         {
             qs(callback) {
-                Inventory.findOne({item_name: req.params.item_name}).exec(callback)
+                Employee.findOne({employee_name: req.params.employee_name}).exec(callback)
             }
         },
         (err, results) => {
@@ -24,7 +24,7 @@ exports.detail = (req, res, next) => {
               }
               if (results.qs == null) {
                 // No results.
-                const err = new Error("Item not found");
+                const err = new Error("Employee not found");
                 err.status = 404;
                 return next(err);
               }
@@ -34,26 +34,26 @@ exports.detail = (req, res, next) => {
     )
 }
 
-exports.add_item = async (req, res) => {
+exports.add_employee = async (req, res) => {
     //basic validation
-    if (!req.body.item_name) {
-        res.status(400).send({ message: "Inventory item must have a name!"});
+    if (!req.body.employee_name) {
+        res.status(400).send({ message: "Employee must have a name!"});
         return;
     }
 
     try {
 
-        const inventory = new Inventory({
-            item_name: req.body.item_name,
-            item_count: req.body.item_count,
-            item_cost: req.body.item_cost,
-            item_price: req.body.item_price //....this was legit my issue ._. 
+        const employee = new Employee({
+            employee_name: req.body.employee_name,
+            employee_branch: req.body.employee_branch,
+            employee_title: req.body.employee_title,
+            employee_salary: req.body.employee_salary //....this was legit my issue ._. 
         })
 
-        console.log(inventory);
+        console.log(employee);
 
         try {
-            return await inventory.save()
+            return await employee.save()
         } catch (error) {
             res.status(500).json({ success: false, error: error.message });
         }
@@ -63,11 +63,11 @@ exports.add_item = async (req, res) => {
     }
 }
 
-exports.delete_item = (req, res, next) => {
+exports.delete_employee = (req, res, next) => {
     async.parallel(
         {
             qs(callback) {
-                Inventory.deleteOne({item_name: req.params.item_name}).exec(callback)
+                Employee.deleteOne({employee_name: req.params.employee_name}).exec(callback)
             }
         },
         (err, results) => {
@@ -76,7 +76,7 @@ exports.delete_item = (req, res, next) => {
               }
               if (results.qs == null) {
                 // No results.
-                const err = new Error("Item not found");
+                const err = new Error("Employee not found");
                 err.status = 404;
                 return next(err);
               }

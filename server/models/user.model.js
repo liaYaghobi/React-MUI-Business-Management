@@ -1,60 +1,53 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-    firstname: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 3,
-        maxlength: 20
-    },
-    lastname: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 3,
-        maxlength: 20
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        lowercase: true
-    },
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      minlength: 3,
-      maxlength: 20
-    },
-    password: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 8
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false
-    }
-})
+  firstname: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastname: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 20,
+  },
+  password: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 8,
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+});
 
-const User = mongoose.model("User", userSchema);
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  try {
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+    return isMatch;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
-module.exports = User
+const User = mongoose.model('User', userSchema);
 
-/*,
-    age: {
-      type: Number,
-      min: 18,
-      max: 120
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }*/
+module.exports = User;

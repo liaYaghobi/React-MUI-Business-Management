@@ -12,6 +12,8 @@ router.delete("/delete_item/:item_name", invController.delete_item)
 
 router.get("/inventory/:item_name", invController.detail)
 
+router.get("/getAll", invController.getAll)
+
 router.get("/test", async (req, res) => {
     res.send("hello, testing get request")
 })

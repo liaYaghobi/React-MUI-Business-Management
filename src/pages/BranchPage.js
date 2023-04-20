@@ -1,29 +1,14 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
 import NewWindow from 'react-new-window';
 
+import axios from 'axios';
+
 // @mui
-import {
-  Card,
-  Table,
-  Stack,
-  Paper,
-  Button,
-  Popover,
-  Checkbox,
-  TableRow,
-  MenuItem,
-  TableBody,
-  TableCell,
-  Container,
-  Typography,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  TextField,
-} from '@mui/material';
+import { Card, Table, Stack, Paper, Button, Checkbox, TableRow, TableBody, TableCell, Container, Typography,
+  IconButton, TableContainer, TablePagination, TextField,} from '@mui/material';
 
 // components
 import Iconify from '../components/iconify';
@@ -35,7 +20,6 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/app/user';
 // mock
 const USERLIST = [];
 
-// ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -75,7 +59,11 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const [open, setOpen] = useState(null);
+  const [formData, setFormData] = useState({
+    branch_name: "",
+    branch_location: "",
+  });
+  const [userList, setUserList] = useState(USERLIST);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -85,37 +73,29 @@ export default function UserPage() {
   const [showWindow, setShowWindow] = useState(false);
   const [employees, setEmployees] = useState([{ id: uuidv4(), name: '', location: '' }]);
 
-  const addEmployee = () => {
-    setEmployees([...employees, { id: uuidv4(),  name: '', location: '' }]);
-  };
-
-  const handleChangeInput = (id, event) => {
-    const newEmployees = employees.map((employee) => {
-      if (id === employee.id) {
-        return { ...employee, [event.target.name]: event.target.value };
-      }
-      return employee;
-    });
-    setEmployees(newEmployees);
-  };
-
   const handleWindow = () => {
-    // Open the new window
+ 
     setShowWindow(true);
   };
 
   const handleCloseWindow = () => {
-    // Open the new window
+    getDatabase()
     setShowWindow(false);
   }; 
   
   
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
+  const handleDeleteClick = (row) => {
+    //setUserList(updatedUserList);
+    axios.delete(`http://localhost:8000/branch/delete_branch/${row.name}`)
+    .then((response) => {
+        USERLIST.splice(0, USERLIST.length);
+        getDatabase();
+        console.log(response.data);
+    })
+    .catch((error) => {
+        // handle error
+        console.error(error);
+    });
   };
 
   const handleRequestSort = (event, property) => {
@@ -136,18 +116,18 @@ export default function UserPage() {
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
+  
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = [name];
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
+      newSelected = selected.slice(1);
     } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      newSelected = selected.slice(0, -1);
     }
+  
     setSelected(newSelected);
   };
-
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -161,18 +141,60 @@ export default function UserPage() {
     setPage(0);
     setFilterName(event.target.value);
   };
-
+/*
   const handleSubmit = () => {
     const newEmployees = [...employees];
     USERLIST.push(...newEmployees);
     setEmployees([{ id: uuidv4(), name: '', branch: '', title: '', salary: '' }]);
+  };*/
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      axios.post('http://localhost:8000/branch/add_branch', formData);//first try to push new item to database
+      getDatabase()
+    } catch (error) {
+      console.error(error);
+      //handle error here
+    }
+    setFormData({
+      branch_name: "",
+      branch_location: ""
+    });
   };
+
+  const getDatabase = async (e) =>{
+    const response =  await axios.get('http://localhost:8000/branch/getAll');
+    const branchList = response.data.map(branch => {
+      return {
+        branch_name: branch.branch_name,
+        branch_location: branch.branch_location,
+      };
+    });
+    var testBranch = [];
+    branchList.forEach(branch => {
+        //prevents some accidental duping that was occuring...
+        if (!USERLIST.some(i => i.name === branch.branch_name)){
+            const newBranch = ([{ name: branch.branch_name, location: branch.branch_location}]);
+            testBranch.push(...newBranch);
+        }
+    });
+    USERLIST.push(...testBranch);
+    //setUserList(USERLIST);
+    setUserList(testBranch);
+  }
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
+
+  useEffect(() => {
+    async function fetchData() {
+      await getDatabase();
+    }
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -193,13 +215,10 @@ export default function UserPage() {
         <NewWindow
           name="example"
           title="Example Website"
-          features={{ width: 640, height: 480 }}
+          features={{ width: 540, height: 380 }}
           onUnload={handleCloseWindow}
         >
-              <form className='qPortal'>
-      <Button id='AddButton' variant='contained' onClick={addEmployee}>
-        Add Branch
-      </Button>
+              <form className='qPortal' onSubmit={handleSubmit}>
      
       {employees.map(q => (
         <div key={q.id}>
@@ -208,16 +227,26 @@ export default function UserPage() {
             name="name"
             type="text"
             label="Name"
-            value={q.name}
-            onChange={event => handleChangeInput(q.id, event)}
+            value={formData.branch_name}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                branch_name: e.target.value,
+            }))
+            }
           />
           <TextField
             style={{ width: "200px", margin: "5px" }}
             name="location"
             type="text"
             label="Location"
-            value={q.location}
-            onChange={event => handleChangeInput(q.id, event)}
+            value={formData.branch_location}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                branch_location: e.target.value,
+            }))
+            }
           />
         </div>
       ))}
@@ -262,11 +291,11 @@ export default function UserPage() {
 
                         <TableCell align="left">{location}</TableCell>
 
-                  
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
+                          <IconButton size="large" color="inherit" onClick={() => handleDeleteClick(row)}>
+                            <Iconify icon={'eva:trash-2-outline'} />
                           </IconButton>
+
                         </TableCell>
                       </TableRow>
                     );
@@ -316,35 +345,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem  sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }

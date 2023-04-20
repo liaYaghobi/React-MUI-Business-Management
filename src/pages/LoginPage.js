@@ -3,8 +3,10 @@ import { styled } from '@mui/material/styles';
 import { Link, TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
-import Logo from '../components/logo';
 
+import { useState} from 'react';
+import axios from 'axios';
+import { updateAccountData } from '../_mock/account'
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -15,7 +17,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
 
 const StyledSection = styled('div')(({ theme }) => ({
   width: '100%',
-  maxWidth: 375,
+  maxWidth: 385,
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -33,9 +35,37 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
-export default function RegisterPage() {
+
+export default function LoginPage() {
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+
   const mdUp = useResponsive('up', 'md');
 
+
+  const handleLogin = async () => {
+    try {
+      
+      const response = await axios.post('http://localhost:8000/user/login', { username, password });
+      setIsAdmin(response.data.isAdmin);
+
+      updateAccountData({
+        displayName: response.data.username,
+        email: response.data.email,
+      });
+     
+      if (response.data.isAdmin) {
+        window.location.href = '/dashboard';
+      } else {
+        window.location.href = '/user/ecommerce';
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   return (
     <>
       <Helmet>
@@ -43,13 +73,7 @@ export default function RegisterPage() {
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'fixed',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
+     
 
         {mdUp && (
           <StyledSection>
@@ -73,20 +97,26 @@ export default function RegisterPage() {
             </Link>
             <Divider sx={{ my: 3 }} />
             <form>
-              <TextField
-                style={{ width: "370px", margin: "5px" }}
-                name="username"
-                type="text"
-                label="Username"
-              />
-              <TextField
-                style={{ width: "370px", margin: "5px" }}
-                name="password"
-                type="password"
-                label="Password"
-              />
+            <TextField
+              style={{ width: "370px", margin: "5px" }}
+              name="username"
+              type="text"
+              label="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <TextField
+              style={{ width: "370px", margin: "5px" }}
+              name="password"
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
             </form>
-            <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+          
+            <LoadingButton fullWidth size="large" type="submit" variant="contained"  onClick={handleLogin}>
               Login
             </LoadingButton>
           </StyledContent>

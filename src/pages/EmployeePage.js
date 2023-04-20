@@ -1,8 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
 import NewWindow from 'react-new-window';
+
+import axios from 'axios';
 
 // @mui
 import {
@@ -11,10 +13,8 @@ import {
   Stack,
   Paper,
   Button,
-  Popover,
   Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
@@ -39,10 +39,9 @@ const USERLIST = [];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'count', label: 'Count', alignRight: false },
-  { id: 'itemID', label: 'ID', alignRight: false },
-  { id: 'cost', label: 'Cost', alignRight: false },
-  { id: 'price', label: 'Price', alignRight: false },
+  { id: 'branch', label: 'Branch', alignRight: false },
+  { id: 'title', label: 'Title', alignRight: false },
+  { id: 'salary', label: 'Salary', alignRight: false },
   { id: '' },
 ];
 
@@ -78,7 +77,13 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-  const [open, setOpen] = useState(null);
+  const [formData, setFormData] = useState({
+    employee_name: "",
+    employee_branch: "",
+    employee_title: "",
+    employee_salary: ""
+  });
+  const [userList, setUserList] = useState(USERLIST);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -86,21 +91,7 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [showWindow, setShowWindow] = useState(false);
-  const [employees, setEmployees] = useState([{ id: uuidv4(), name: '', count: '', itemID: '', cost: '', price: '' }]);
-
-  const addEmployee = () => {
-    setEmployees([...employees, { id: uuidv4(),  name: '', count: '', itemID: '', cost: '', price: ''  }]);
-  };
-
-  const handleChangeInput = (id, event) => {
-    const newEmployees = employees.map((employee) => {
-      if (id === employee.id) {
-        return { ...employee, [event.target.name]: event.target.value };
-      }
-      return employee;
-    });
-    setEmployees(newEmployees);
-  };
+  const [employees, setEmployees] = useState([{ id: uuidv4(), name: '', branch: '', title: '', salary: '' }]);
 
   const handleWindow = () => {
     // Open the new window
@@ -109,18 +100,10 @@ export default function UserPage() {
 
   const handleCloseWindow = () => {
     // Open the new window
+    getDatabase()
     setShowWindow(false);
   }; 
   
-  
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
-  };
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -165,10 +148,58 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const handleSubmit = () => {
-    const newEmployees = [...employees];
-    USERLIST.push(...newEmployees);
-    setEmployees([{ id: uuidv4(), name: '', branch: '', title: '', salary: '' }]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      axios.post('http://localhost:8000/employee/add_employee', formData);//first try to push new item to database
+      getDatabase()
+    } catch (error) {
+      console.error(error);
+      //handle error here
+    }
+    setFormData({
+      employee_name: "",
+      employee_branch: "",
+      employee_title: "",
+      employee_salary: ""
+    });
+  };
+
+  const getDatabase = async (e) =>{
+    const response =  await axios.get('http://localhost:8000/employee/getAll');
+    const employeeList = response.data.map(employee => {
+      return {
+        employee_name: employee.employee_name,
+        employee_branch: employee.employee_branch,
+        employee_title: employee.employee_title,
+        employee_salary: employee.employee_salary
+      };
+    });
+    var testEmployee = [];
+    employeeList.forEach(employee => {
+        //prevents some accidental duping that was occuring...
+        if (!USERLIST.some(i => i.name === employee.employee_name)){
+            const Employee = ([{ name: employee.employee_name, branch: employee.employee_branch, title: employee.employee_title, salary: employee.employee_salary  }]);
+            testEmployee.push(...Employee);
+        }
+    });
+    USERLIST.push(...testEmployee);
+    //setUserList(USERLIST);
+    setUserList(testEmployee);
+  }
+
+  const handleDeleteClick = (row) => {
+    //setUserList(updatedUserList);
+    axios.delete(`http://localhost:8000/employee/delete_employee/${row.name}`)
+    .then((response) => {
+        USERLIST.splice(0, USERLIST.length);
+        getDatabase();
+        console.log(response.data);
+    })
+    .catch((error) => {
+        // handle error
+        console.error(error);
+    });
   };
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
@@ -177,32 +208,36 @@ export default function UserPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
+  useEffect(() => {
+    async function fetchData() {
+      await getDatabase();
+    }
+    fetchData();
+  }, []);
+
   return (
     <>
       <Helmet>
-        <title> Inventory </title>
+        <title> User </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Inventory
+            Employees
           </Typography>
           <Button onClick={handleWindow} variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Add Inventory
+            Add Employee
           </Button>
         </Stack>
         {showWindow && (
         <NewWindow
-          name="example"
-          title="Example Website"
-          features={{ width: 640, height: 480 }}
+          name="Add Employees"
+          title="Add Employees"
+          features={{ width: 850, height: 480 }}
           onUnload={handleCloseWindow}
         >
-              <form className='qPortal'>
-      <Button id='AddButton' variant='contained' onClick={addEmployee}>
-        Add Item
-      </Button>
+              <form className='qPortal' onSubmit={handleSubmit}>
      
       {employees.map(q => (
         <div key={q.id}>
@@ -210,41 +245,53 @@ export default function UserPage() {
             style={{ width: "200px", margin: "5px" }}
             name="name"
             type="text"
-            label="Name"
-            value={q.name}
-            onChange={event => handleChangeInput(q.id, event)}
+            label="Full Name"
+            value={formData.employee_name}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                employee_name: e.target.value,
+            }))
+            }
           />
           <TextField
             style={{ width: "200px", margin: "5px" }}
-            name="count"
-            type="number"
-            label="Count"
-            value={q.count}
-            onChange={event => handleChangeInput(q.id, event)}
+            name="branch"
+            type="text"
+            label="Branch"
+            value={formData.employee_branch}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                employee_branch: e.target.value,
+            }))
+            }
           />
            <TextField
             style={{ width: "200px", margin: "5px" }}
-            name="itemID"
-            type="number"
-            label="Item ID"
-            value={q.itemID}
-            onChange={event => handleChangeInput(q.id, event)}
+            name="title"
+            type="text"
+            label="Title"
+            value={formData.employee_title}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                employee_title: e.target.value,
+            }))
+            }
           />
-             <TextField
+         <TextField
             style={{ width: "200px", margin: "5px" }}
-            name="cost"
+            name="salary"
             type="number"
-            label="Cost"
-            value={q.cost}
-            onChange={event => handleChangeInput(q.id, event)}
-          />
-               <TextField
-            style={{ width: "200px", margin: "5px" }}
-            name="price"
-            type="number"
-            label="Price"
-            value={q.price}
-            onChange={event => handleChangeInput(q.id, event)}
+            label="Salary"
+            value={formData.employee_salary}
+            onChange={(e) =>
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                employee_salary: e.target.value,
+            }))
+            }
           />
         </div>
       ))}
@@ -270,7 +317,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, count, itemID, cost, price} = row;
+                    const { id, name, branch, title, salary} = row;
                     const selectedUser = selected.indexOf(name) !== -1;
 
                     return (
@@ -287,15 +334,16 @@ export default function UserPage() {
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{count}</TableCell>
-                        <TableCell align="left">{itemID}</TableCell>
-                        <TableCell align="left">{cost}</TableCell>
-                        <TableCell align="left">{price}</TableCell>
+                        <TableCell align="left">{branch}</TableCell>
+
+                        <TableCell align="left">{title}</TableCell>
+
+                        <TableCell align="left">{salary}</TableCell>
 
                   
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
+                          <IconButton size="large" color="inherit" onClick={() => handleDeleteClick(row)}>
+                            <Iconify icon={'eva:trash-2-outline'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
@@ -346,35 +394,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
     </>
   );
 }

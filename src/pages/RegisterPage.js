@@ -3,7 +3,8 @@ import { styled } from '@mui/material/styles';
 import { TextField, Container, Typography, Divider } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import useResponsive from '../hooks/useResponsive';
-import Logo from '../components/logo';
+import React, { useEffect } from 'react';
+
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -44,16 +45,57 @@ export default function RegisterPage() {
     //passwordConfirm: ""
   });
 
+  const [hasError, setHasError] = useState(false);
+
+  const [emailError, setEmailError] = useState(false);
+
+  const [usernameError, setUsernameError] = useState(false);
+  
+  useEffect(() => {
+    setEmailError(false);
+    setUsernameError(false);
+    setHasError(false);
+  }, [formData]);
+
+  function validateFormData(formData) {
+    for (const key in formData) {
+      if (formData[key] === "") {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/user/register', formData);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-      //handle error here
+    if (validateFormData(formData)) {
+      try {
+        const response = await axios.post('http://localhost:8000/user/register', formData);
+  
+        sessionStorage.setItem('displayName', formData.username);
+        sessionStorage.setItem('email', formData.email);
+  
+        if (formData.isAdmin) {
+          window.location.href = '/dashboard';
+        } else {
+          window.location.href = '/user/ecommerce';
+        }
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        if (errorMessage.includes('E11000')) {
+         
+          if (errorMessage.includes('email')) {
+            setEmailError(true);
+          } else if (errorMessage.includes('username')) {
+            setUsernameError(true);
+          }
+        }
+      }
+    } else {
+      setHasError(true);
     }
   };
+  
 
   const mdUp = useResponsive('up', 'md');
 
@@ -64,14 +106,6 @@ export default function RegisterPage() {
       </Helmet>
 
       <StyledRoot>
-        <Logo
-          sx={{
-            position: 'fixed',
-            top: { xs: 16, sm: 24, md: 40 },
-            left: { xs: 16, sm: 24, md: 40 },
-          }}
-        />
-
         {mdUp && (
           <StyledSection>
             <Typography variant="h4" sx={{ px: 5 }}>
@@ -80,13 +114,18 @@ export default function RegisterPage() {
             <img src="/assets/illustrations/registerImage.gif" alt="gif" />
           </StyledSection>
         )}
-
         <Container maxWidth="sm">
           <StyledContent>
-            <Typography variant="h3" gutterBottom>
+            <Typography variant="h4" gutterBottom>
               Create an Account
             </Typography>
-            <Divider sx={{ my: 3 }}/>
+            <Divider sx={{ my: 2 }}/>
+            <div style={{ color: 'red', fontWeight: 600 }}>
+                {emailError ? <div>Email already in use</div> : null}
+              </div>
+              <div style={{ color: 'red', fontWeight: 600 }}>
+                {usernameError ? <div>Username taken</div> : null}
+              </div>
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'flex' }}>
                 <TextField
@@ -161,7 +200,7 @@ export default function RegisterPage() {
                 type="password"
                 label="Confirm Password"
               />
-              <input 
+              <input   style={{ marginTop: '13px'}}
                 type="checkbox" 
                 id="isAdmin" 
                 name="isAdmin"
@@ -172,8 +211,13 @@ export default function RegisterPage() {
                     isAdmin: e.target.checked,
                   }))
               }/>
-              <label htmlFor="isAdmin">Admin</label>
-              <LoadingButton fullWidth size="large" type="submit" variant="contained" >
+              <label htmlFor="isAdmin" style={{ fontSize: '16px', marginTop: '13px'}}>Admin</label>
+
+              <div style={{ color: 'red', fontWeight: 600 }}>
+                {hasError ? <div>Please fill out all the fields!</div> : null}
+              </div>
+
+              <LoadingButton sx={{ mt: 2, mb: 2 }} fullWidth size="large" type="submit" variant="contained" >
               Submit
               </LoadingButton>
             </form>
