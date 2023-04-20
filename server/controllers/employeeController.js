@@ -1,15 +1,15 @@
 const Employee = require("../models/employee.model")
 const async = require("async")
 
-exports.getAll = (req, res, next) => {
-    Employee.find({}, (err, employees) => {
-        if (err) {
-          return next(err);
-        }
-        // Successful, so send response with the employees array
-        res.send(employees);
-      });        
-  }  
+exports.getAll = async (req, res, next) => {
+    try {
+      const items = await Employee.find({});
+      res.send(items);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  
 
 exports.detail = (req, res, next) => {
     async.parallel(
@@ -63,25 +63,16 @@ exports.add_employee = async (req, res) => {
     }
 }
 
-exports.delete_employee = (req, res, next) => {
-    async.parallel(
-        {
-            qs(callback) {
-                Employee.deleteOne({employee_name: req.params.employee_name}).exec(callback)
-            }
-        },
-        (err, results) => {
-            if (err) {
-                return next(err);
-              }
-              if (results.qs == null) {
-                // No results.
-                const err = new Error("Employee not found");
-                err.status = 404;
-                return next(err);
-              }
-              // Successful, so send response, but what about displaying it?
-              res.send(results.qs)
-        }
-    )
-}
+exports.delete_employee = async (req, res, next) => {
+    try {
+      const result = await Employee.deleteOne({ employee_name: req.params.employee_name });
+      if (result.deletedCount === 0) {
+        const err = new Error("Employee not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  };

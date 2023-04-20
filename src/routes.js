@@ -1,6 +1,7 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
+import UserLayout from './layouts/user';
 import SimpleLayout from './layouts/simple';
 //
 
@@ -11,6 +12,7 @@ import InventoryPage from './pages/InventoryPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import BranchPage from './pages/BranchPage';
 import RegisterPage from './pages/RegisterPage';
+import EcommercePage from './pages/EcommercePage';
 
 
 // ----------------------------------------------------------------------
@@ -18,8 +20,16 @@ import RegisterPage from './pages/RegisterPage';
 export default function Router() {
   const routes = useRoutes([
     {
-      path: 'login',
-      element: <LoginPage />,
+      path: '/',
+      element: <LoginPage />
+    },
+    {
+      path: '/user',
+      element: <UserLayout />,
+      children: [
+        { element: <Navigate to="/user/app" />},
+        { path: 'ecommerce', element: <EcommercePage /> },
+      ],
     },
     {
       path: '/dashboard',
@@ -39,7 +49,6 @@ export default function Router() {
     {
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],
@@ -52,3 +61,5 @@ export default function Router() {
 
   return routes;
 }
+
+

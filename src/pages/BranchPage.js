@@ -117,16 +117,22 @@ export default function UserPage() {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
   
+  
     if (selectedIndex === -1) {
+      newSelected = [name];
       newSelected = [name];
     } else if (selectedIndex === 0) {
       newSelected = selected.slice(1);
+      newSelected = selected.slice(1);
     } else if (selectedIndex === selected.length - 1) {
+      newSelected = selected.slice(0, -1);
       newSelected = selected.slice(0, -1);
     }
   
+  
     setSelected(newSelected);
   };
+  
   
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -291,10 +297,12 @@ export default function UserPage() {
 
                         <TableCell align="left">{location}</TableCell>
 
+
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={() => handleDeleteClick(row)}>
                             <Iconify icon={'eva:trash-2-outline'} />
                           </IconButton>
+
 
                         </TableCell>
                       </TableRow>

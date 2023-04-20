@@ -8,22 +8,23 @@ const InventorySchema = new mongoose.Schema({
     item_price: {type: Number, required: true}
 })
 
-InventorySchema.pre('save', function (next) {
+InventorySchema.pre('save', async function () {
     const doc = this;
-    //only generate new id for new document
+    // only generate new id for new document
     if (doc.isNew) {
-        mongoose.model('Inventory').findOne().sort('-id').exec(function (err, maxDoc) {
-            if (maxDoc) {
-                doc.id = maxDoc.id + 1;
-            } else {
-                doc.id = 1;
-            }
-            next();
-        });
-    } else {
-        next();
+      try {
+        const maxDoc = await mongoose.model('Inventory').findOne().sort('-id');
+        if (maxDoc) {
+          doc.id = maxDoc.id + 1;
+        } else {
+          doc.id = 1;
+        }
+      } catch (err) {
+        throw err;
+      }
     }
-});
+  });
+  
 
 const Inventory = mongoose.model("Inventory", InventorySchema)
 

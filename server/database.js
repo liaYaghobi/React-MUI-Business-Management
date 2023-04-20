@@ -1,7 +1,7 @@
+const dotenv = require('dotenv');
+dotenv.config()
 const mongoose = require("mongoose")
-mongoose.Promise = global.Promise;
-const mongoURI = 'mongodb+srv://admin:EeOCvQHbRRvShduc@cluster1.kcxo9su.mongodb.net/BusinessManagement?retryWrites=true&w=majority'
-
+const mongoURI = process.env.mongoURI
 //mongoURI if connecting to Atlas, otherwise Docker container
 mongoose.set('strictQuery', false);
 mongoose.connect(

@@ -1,15 +1,15 @@
 const Branch = require("../models/branch.model")
 const async = require("async")
 
-exports.getAll = (req, res, next) => {
-    Branch.find({}, (err, branches) => {
-        if (err) {
-          return next(err);
-        }
-        // Successful, so send response with the branches array
-        res.send(branches);
-      });        
-  }  
+exports.getAll = async (req, res, next) => {
+    try {
+      const items = await Branch.find({});
+      res.send(items);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  
 
 exports.detail = (req, res, next) => {
     async.parallel(
@@ -61,25 +61,16 @@ exports.add_branch = async (req, res) => {
     }
 }
 
-exports.delete_branch = (req, res, next) => {
-    async.parallel(
-        {
-            qs(callback) {
-                Branch.deleteOne({branch_name: req.params.branch_name}).exec(callback)
-            }
-        },
-        (err, results) => {
-            if (err) {
-                return next(err);
-              }
-              if (results.qs == null) {
-                // No results.
-                const err = new Error("Branch not found");
-                err.status = 404;
-                return next(err);
-              }
-              // Successful, so send response, but what about displaying it?
-              res.send(results.qs)
-        }
-    )
-}
+exports.delete_branch = async (req, res, next) => {
+    try {
+      const result = await Branch.deleteOne({ branch_name: req.params.branch_name });
+      if (result.deletedCount === 0) {
+        const err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  };

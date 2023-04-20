@@ -1,15 +1,15 @@
 const Inventory = require("../models/inventory.model")
 const async = require("async")
 
-exports.getAll = (req, res, next) => {
-    Inventory.find({}, (err, items) => {
-        if (err) {
-          return next(err);
-        }
-        // Successful, so send response with the items array
-        res.send(items);
-      });        
-  }  
+exports.getAll = async (req, res, next) => {
+    try {
+      const items = await Inventory.find({});
+      res.send(items);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  
 
 exports.detail = (req, res, next) => {
     async.parallel(
@@ -63,25 +63,17 @@ exports.add_item = async (req, res) => {
     }
 }
 
-exports.delete_item = (req, res, next) => {
-    async.parallel(
-        {
-            qs(callback) {
-                Inventory.deleteOne({item_name: req.params.item_name}).exec(callback)
-            }
-        },
-        (err, results) => {
-            if (err) {
-                return next(err);
-              }
-              if (results.qs == null) {
-                // No results.
-                const err = new Error("Item not found");
-                err.status = 404;
-                return next(err);
-              }
-              // Successful, so send response, but what about displaying it?
-              res.send(results.qs)
-        }
-    )
-}
+exports.delete_item = async (req, res, next) => {
+    try {
+      const result = await Inventory.deleteOne({ item_name: req.params.item_name });
+      if (result.deletedCount === 0) {
+        const err = new Error("Item not found");
+        err.status = 404;
+        return next(err);
+      }
+      res.send(result);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  

@@ -78,12 +78,12 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function UserPage() {
-    const [formData, setFormData] = useState({
-        item_name: "",
-        item_count: "",
-        item_cost: "",
-        item_price: ""
-      });
+  const [formData, setFormData] = useState({
+      item_name: "",
+      item_count: "",
+      item_cost: "",
+      item_price: ""
+    });
   const [userList, setUserList] = useState(USERLIST);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
@@ -124,6 +124,7 @@ export default function UserPage() {
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
+  
   
     if (selectedIndex === -1) {
       newSelected = [name];
@@ -222,7 +223,6 @@ export default function UserPage() {
         console.error(error);
     });
   };
-
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
@@ -414,6 +414,8 @@ export default function UserPage() {
           />
         </Card>
       </Container>
+
+    
     </>
   );
 }

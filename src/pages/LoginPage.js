@@ -6,7 +6,9 @@ import useResponsive from '../hooks/useResponsive';
 
 import { useState} from 'react';
 import axios from 'axios';
-import { updateAccountData } from '../_mock/account'
+
+import { get } from 'react-hook-form';
+//import { updateAccountData } from '../_mock/account'
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -41,9 +43,9 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const mdUp = useResponsive('up', 'md');
-
 
   const handleLogin = async () => {
     try {
@@ -51,17 +53,16 @@ export default function LoginPage() {
       const response = await axios.post('http://localhost:8000/user/login', { username, password });
       setIsAdmin(response.data.isAdmin);
 
-      updateAccountData({
-        displayName: response.data.username,
-        email: response.data.email,
-      });
-     
+      sessionStorage.setItem('displayName', response.data.username);
+      sessionStorage.setItem('email', response.data.email);
+
       if (response.data.isAdmin) {
         window.location.href = '/dashboard';
       } else {
         window.location.href = '/user/ecommerce';
       }
     } catch (error) {
+      setHasError(true);
       console.error(error);
     }
   };
@@ -95,6 +96,9 @@ export default function LoginPage() {
             <Link sx={{ ml: 'auto' }} href="/register" variant="subtitle2">
               Get started
             </Link>
+            <div style={{ color: 'red', fontWeight: 600 }}>
+                {hasError ? <div>Invalid username or password</div> : null}
+            </div>
             <Divider sx={{ my: 3 }} />
             <form>
             <TextField
@@ -119,6 +123,7 @@ export default function LoginPage() {
             <LoadingButton fullWidth size="large" type="submit" variant="contained"  onClick={handleLogin}>
               Login
             </LoadingButton>
+     
           </StyledContent>
         </Container>
       </StyledRoot>
