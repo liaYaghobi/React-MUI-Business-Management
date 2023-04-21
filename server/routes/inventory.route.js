@@ -10,6 +10,8 @@ router.post("/add_item", async (req, res) => {
 
 router.delete("/delete_item/:item_name", invController.delete_item)
 
+router.delete("delete_all", invController.delete_all)
+
 router.get("/inventory/:item_name", invController.detail)
 
 router.get("/getAll", invController.getAll)

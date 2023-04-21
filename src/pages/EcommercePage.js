@@ -4,44 +4,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MinimizeOutlinedIcon from '@mui/icons-material/MinimizeOutlined';
 import { styled } from '@mui/system';
 
-const PRODUCTS = [
-  {
-    id: 1,
-    name: 'Nike Air Force 1 NDESTRUKT',
-    price: 120,
-  },
-  {
-    id: 2,
-    name: 'Nike Space Hippie 04',
-    price: 150,
-  },
-  {
-    id: 3,
-    name: 'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
-    price: 180,
-  },
-  {
-    id: 4,
-    name: 'Nike Blazer Low 77 Vintage',
-    price: 90,
-  },
-  {
-    id: 5,
-    name: 'Nike ZoomX SuperRep Surge',
-    price: 200,
-  },
-  {
-    id: 6,
-    name: 'Zoom Freak 2',
-    price: 120,
-  },
-  {
-    id: 7,
-    name: 'Nike Air Max Zephyr',
-    price: 160,
-  },
-];
+import axios from 'axios';
 
+const PRODUCTS = [];
 
 const StyledCartIcon = styled(ShoppingCartIcon)(({ theme }) => ({
   fontSize: 36,
@@ -64,21 +29,52 @@ const CartContainer = styled('div')({
 export default function ProductsPage() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [fetched, setFetched] = useState(false);
   const cartRef = useRef(null);
 
   useEffect(() => {
+    async function fetchData() {
+      await getDatabase();
+      setFetched(true);
+    }
+    fetchData();
     const handleOutsideClick = (event) => {
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setShowCart(false);
       }
     };
-
     document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
+
+  const getDatabase = async (e) =>{
+    const response =  await axios.get('http://localhost:8000/inventory/getAll');
+    const itemList = response.data.map(item => {
+      return {
+        id: item.id,
+        name: item.item_name,
+        price: item.item_price
+      };
+    });
+    var testInventory = [];
+    itemList.forEach(item => {
+        //prevents some accidental duping that was occuring...
+        if (!PRODUCTS.some(i => i.id === item.id)){
+            const newInventory = ([{ name: item.name, id: item.id, price: item.price  }]);
+            testInventory.push(...newInventory);
+        }
+    });
+    PRODUCTS.push(...testInventory);
+    console.log(PRODUCTS);
+    console.log(PRODUCTS.map((product) => (
+      product.price
+    )));
+    //setUserList(USERLIST);
+    //setUserList(testInventory);
+  }
 
   const handleAddToCart = (product) => {
     setCart((prevCart) => [...prevCart, product]);
@@ -90,6 +86,10 @@ export default function ProductsPage() {
   const handleDeleteItem = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
+
+  if (!fetched) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

@@ -76,4 +76,13 @@ exports.delete_item = async (req, res, next) => {
       return next(err);
     }
   };
+
+exports.delete_all = async (req, res, next) => {
+  try {
+    const result = await Inventory.deleteMany({});
+    res.send(result);
+  } catch (err) {
+    return next(err);
+  }
+}
   
